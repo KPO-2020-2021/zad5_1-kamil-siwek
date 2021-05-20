@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <stdlib.h>
-
+#include "Dron.hh"
 #include "exampleConfig.h"
 #include "example.h"
 
@@ -28,8 +28,9 @@ int main() {
             << std::endl;
   std::system("cat ../LICENSE");
 
-  // Bring in the dummy class from the example source,
-  // just to show that it is accessible from main.cpp.
+ Dron D;
+while(1){};
+
   Dummy d = Dummy();
   return d.doSomething() ? 0 : -1;
 }
