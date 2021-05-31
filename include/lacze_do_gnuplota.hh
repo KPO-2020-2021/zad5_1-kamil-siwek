@@ -32,78 +32,20 @@ namespace PzG {
    *  ze zmianą sposobu interpretacji danych zawartych pliku. Jeśli 
    *  np. wybrany zostanie tryb 2D, to zakłada się, że w każdej linii
    *  pliku z danymi znajdują się wartości współrzędnych \e x, \e y.
+   *  Wartości typu:
+   *   \li \p TR_2D - rysowanie w trybie 2D, co sprowadza się do 
+   *                  rysowania wykresów funkcji jednej zmiennej.
+   *   \li \p TR_3D - rysowanie w trybie 3D. Oznacza to możliwość
+   *                  rysowania wykresów funkcji dwóch zmiennych.
+   *                 
    */
-  enum TypTrybuRysowania { 
-            /*!
-	     * - rysowanie w trybie 2D, co sprowadza się do 
-             * rysowania wykresów funkcji jednej zmiennej.
-	     */
-            TR_2D,  
-            /*!
-	     * - rysowanie w trybie 3D. Oznacza to możliwość
-             * rysowania wykresów funkcji dwóch zmiennych.
-             */
-            TR_3D 
-        };
+  enum TrybRysowania { TR_2D,  TR_3D };
   /*!
-   * \brief Sposób rysowania linii lub punktów
-   *
-   *  Sposób rysowania linii lub punktów. 
-   */
-  enum TypSposobuRysowania { 
-      /*!
-       * - rysowana jest linia łaman łącząca kolejne punkty.
-       * Współrzędne punktów \e x i \e y zadawane są w pliku tekstowym.
-       * Zapiswane one muszą być w osobnych liniach.
-         \verbatim
-       20    30
-       41.5  62
-\endverbatim
-       */
-       SR_Ciagly, 
-      /*!
-       * - rysowane są jednakowe punkty.
-       * Współrzędne punktów \e x i \e y zadawane są w pliku tekstowym.
-       * Zapiswane one muszą być w osobnych liniach, np.
-         \verbatim
-       20    30
-       41.5  62
-\endverbatim
-       */
-       SR_Punktowy,
-      /*!
-       * - rysowane są punkty o różnych rozmiarach.
-       * Współrzędne punktów \e x i \e y oraz ich rozmiary 
-       * zadawane są w pliku tekstowym.
-       * Wartość rozmiaru musi być liczbą całkowitą większą od 0.
-       * Współrzędne i rozmiar muszą być w osobnych liniach, np.
-         \verbatim
-       20    30   5
-       41.5  62   2
-\endverbatim
-       */
-       SR_PunktowyNiejednorodny 
-   };
-  /*!
-   * \brief Typ dostępu do plik z danymi
+   * \brief Sposób rysowania linii
    * 
-   * Typ dostepu do plik z danymi, tzn. czy jest on lokalny tylko 
-   * z poziomu pojedynczego łącza czy też z pozmiomu wszystkich łącz
+   * Określa sposób rysowania linii.
    */
-  enum TypDostepuDoZasobu { 
-      /*!
-       * - dostęp tylko z poziomu pojedynczego łącza. 
-       * Dane z pliku będą wizualizowane tylko w jednym okienku graficznym
-       * odpowiadające danym łączu.
-       */
-      DZ_Lokalny, 
-      /*!
-       * - dostęp ze poziomu wszystkich łączy. 
-       * Dane z pliku będą wizualizowane we okienkach graficznych
-       * odpowiadającym utworzonym łączom.
-       */
-      DZ_Globalny 
-   };
+  enum RodzajRysowania { RR_Ciagly, RR_Punktowy }; 
 
   /*!
    * \brief Zestaw informacji dotyczący pliku i sposobu rysowania
@@ -114,194 +56,62 @@ namespace PzG {
   class InfoPlikuDoRysowania {
     public:
      /*!
-      * \brief Inicjalizuje obiekt
+      * Inicjalizuje obiekt.
+      *  \param NazwaPliku - nazwa pliku, z którego pobierane będą dane,
+      *  \param RodzRys - rodzaj rysowania linii,
+      *  \param Szerokosc - szerokosc linii.
       */
-     InfoPlikuDoRysowania( const char*      NazwaPliku, 
-                           TypSposobuRysowania  SposobRys, 
-                           int              Szerokosc = 1,
-                           int              Kolor = 1,
-                           int              Styl  = 7
-                         );
+      InfoPlikuDoRysowania(const char* NazwaPliku, RodzajRysowania  RodzRys, int Szerokosc)
+      {
+        _NazwaPliku = NazwaPliku;
+        _RodzRys = RodzRys;
+        _Szerokosc = Szerokosc;
+      }
      /*!
       * \brief Udostępia nazwę pliku do rysowania
       *
       * Udostępnia nazwę pliku z danymi do rysowania.
       */
-     const std::string WezNazwePliku() const { return _NazwaPliku; }
+      const std::string WezNazwePliku() const { return _NazwaPliku; }
      /*!
       * \brief Zmienia nazwę pliku do rysowania
       *
       * Zmienia nazwę pliku z danymi do rysowania.
       */
-     void ZmienNazwePliku(const std::string& NazwaPliku) 
-                                       { _NazwaPliku = NazwaPliku; }
+      void ZmienNazwePliku(const std::string& NazwaPliku) { _NazwaPliku = NazwaPliku; }
      /*!
       * \brief Udostępnia sposób rysowanej linii
       *
       * Udostępnia informację o sposóbie rysowania linii.
       */
-     TypSposobuRysowania WezSposobRys() const { return _SposobRys; }
-     /*!
-      * \brief Zmienia sposób rysowania
-      *
-      * Zmienia sposób rysowania linii lub płaszczyzny. Rodzaj obiektu
-      * zależy od typu przekazywanych danych w pliku skojarzonym z
-      * z danym obiektem graficznym.
-      * \param SposobRys - nowy sposób rysowania, który będzie przyporządkowany
-      *               danemu obiektowi graficznemu.
-      */
-      InfoPlikuDoRysowania& ZmienSposobRys(TypSposobuRysowania  SposobRys) 
-                                 { _SposobRys = SposobRys;  return *this; }
+      RodzajRysowania WezRodzRys() const { return _RodzRys; }
      /*!
       * \brief  Udostępnia informację o szerokości linii.
       *
       *  Udostępnia informację o szerokości rysowanej linii.
       */
-     int WezSzerokosc() const { return _Szerokosc; }
-     /*!
-      * \brief Zmienia szerokość rysowania elementów graficznych.
-      *
-      * Zmienia szerokość rysowania elementów graficznych.
-      *
-      * \param Szerokosc - nowa wartość szerokości rysowanej linii.
-      * \pre Parametr \e Szerokosc musi mieć warość większą od 0.
-      */
-     InfoPlikuDoRysowania& ZmienSzerokosc(int Szerokosc)
-                                { _Szerokosc = Szerokosc;  return *this; }
-     /*!
-      * \brief Udostępnia numer koloru
-      *
-      * Udostępnia numer koloru jakim ma być rysowany dany
-      * element.
-      */
-     int WezKolor() const { return _Kolor; }
-     /*!
-      * \brief Zmienia kolor rysowania elementów graficznych.
-      *
-      * Zmienia kolor rysowania elementów graficznych.
-      *
-      * Informację o kolorach rysowanych obiektów odpowiadających poszczególnym 
-      * wartościom
-      * można uzyskać poprzez wywołanie programu \e gnuplot, a następnie
-      * wykonania polecenia \e test na poziomie interakcji z programem
-      * \e gnuplot. Kolory rysowanych obiektów odpowiadające poszczególnym 
-      * numerom są widoczne
-      * po prawej stronie wyświetlonego okienka.
-      * \param Kolor - numer nowego koloru rysowania.
-      */
-     InfoPlikuDoRysowania& ZmienKolor(int Kolor)
-                                { _Kolor = Kolor;  return *this; }
-
-     /*!
-      * \brief Udostępia oznaczenie liczbowe stylu rysowania
-      *
-      * Udostępia oznaczenie liczbowe stylu rysowania danego
-      * obiektu graficznego.
-      *
-      * Informację o stylach rysowanych obiektów odpowiadających poszczególnym 
-      * wartościom
-      * można uzyskać poprzez wywołanie programu \e gnuplot, a następnie
-      * wykonania polecenia \e test na poziomie interakcji z programem
-      * \e gnuplot. Style rysowanych obiektów odpowiadające poszczególnym 
-      * numerom są widoczne
-      * po prawej stronie wyświetlonego okienka.
-      */
-     int WezStyl() const { return _Styl; }
-     /*!
-      * \brief Zmienia styl rysowania
-      *
-      * Zmienia styl rysowania obiektu graficznego (linii lub punktów).
-      * 
-      * Informację o stylach rysowanych obiektów odpowiadających poszczególnym 
-      * wartościom
-      * można uzyskać poprzez wywołanie programu \e gnuplot, a następnie
-      * wykonania polecenia \e test na poziomie interakcji z programem
-      * \e gnuplot. Style rysowanych obiektów odpowiadające poszczególnym 
-      * numerom są widoczne
-      * po prawej stronie wyświetlonego okienka.
-      * \param Styl - numer nowego stylu rysowania.
-      */
-     InfoPlikuDoRysowania& ZmienStyl(int Styl)
-                                { _Styl = Styl;  return *this; }
-     /*!
-      * \brief Udostępnia etykietę punktów
-      *
-      *  Udostępnia etykietę, która może być użyta do 
-      *  oznaczania punktów.
-      */
-     const std::string& WezEtykiete() const { return _Etykieta; }
-     /*!
-      * \brief Zmienia etykietę 
-      *
-      * Zmienia etykietę, która ma się pojawić przy rysowanym 
-      * elemencie.
-      * \param Etykieta - zawartość nowej etykiety.
-      */
-     InfoPlikuDoRysowania& ZmienEtykiete(const char* Etykieta)
-                                { _Etykieta = Etykieta;  return *this; }
+      int WezSzerokosc() const { return _Szerokosc; }
 
     private:
-     /*!
-      * \brief Nazwa pliku z danymi do rysowania
-      *
-      * Nazwa pliku z danymi do rysowania.
-      */
-     std::string  _NazwaPliku;
-     /*!
-      * \brief Etykieta, która może być umieszczana przy punktach
-      *
-      * Etykieta, którą mogą być oznaczane wyświetlane punkty.
-      * Jeśli jest ich więcej niż 1, to do każdej etykiety
-      * dopisywany jest kolejny numer.
-      */
-     std::string  _Etykieta;
-     /*!
-      * \brief Szerokość użytego piórka
-      *
-      * Określa szerokość piórka, jakie ma być użyte
-      * do rysowania obiektów graficznych. W przypadku rysowania
-      * obiektów punktowych określa rozmiar tego obiektu.
-      */
-     int  _Szerokosc;
-     /*!
-      * \brief Styl rysowanego elementu
-      *
-      *  Przechowuje informację o typie rysowanego punktu.
-      *  Jeśli rysowana jest linia, to wartość ta określa typ rysowanej
-      *  linii (ciągła, kreskowana, kropkowana itd.). Jeśli rysowane
-      *  są obiekty punktowe, to określa ona typ rysowanego puntku (krzyżyk,
-      *  kropka, kólko itd.).
-      *
-      * Informację o stylach rysowanych obiektów odpowiadających poszczególnym 
-      * wartościom
-      * można uzyskać poprzez wywołanie programu \e gnuplot, a następnie
-      * wykonania polecenia \e test na poziomie interakcji z programem
-      * \e gnuplot. Style rysowanych obiektów odpowiadające poszczególnym 
-      * numerom są widoczne
-      * po prawej stronie wyświetlonego okienka.
-      */     
-     int  _Styl;
-     /*!
-      * \brief Numer koloru rysowanego elementu
-      *
-      * Przechowuje numer koloru jaki ma być użyty do rysowania wykresów 
-      * lub punktów (w zależności od wyboru trybu rysowania patrz 
-      * \link PzG::InfoPlikuDoRysowania::_SposobRys _SposobRys\endlink).
-      *
-      * Informację o kolorach odpowiadających poszczególnym wartościom
-      * można uzyskać poprzez wywołanie programu \e gnuplot, a następnie
-      * wykonania polecenia \e test na poziomie interakcji z programem
-      * \e gnuplot. Kolory odpowiadające poszczególnym numerom są widoczne
-      * po prawej stronie wyświetlonego okienka.
-      */
-     int  _Kolor;
-
-     /*!
-      * \brief Sposób rysowania danej linii
-      *
-      * Przechowuje informacje o sposobie rysowania linii.
-      */
-     TypSposobuRysowania  _SposobRys;
+    /*!
+     * \brief Nazwa pliku z danymi do rysowania
+     *
+     * Nazwa pliku z danymi do rysowania.
+     */
+      std::string  _NazwaPliku;
+    /*!
+     * \brief Szerokość użytego piórka
+     *
+     * Określa szerokość piórka, jakie ma być użyte
+     * do rysowania obiektów graficznych.
+     */
+      int  _Szerokosc;
+    /*!
+     * \brief Sposób rysowania danej linii
+     *
+     * Przechowuje informacje o sposobie rysowania linii.
+     */
+      RodzajRysowania  _RodzRys;
   };
 
 
@@ -320,38 +130,24 @@ class LaczeDoGNUPlota {
    *
    * Pole jest zarządcą listy nazw plików, z których są wczytywane
    * dane dotyczące rysowania obrysu brył przez program \e gnuplot.
-   * Operacja ta wykonywana jest po wywołaniu polecenia. Pole to jest
-   * wspólne dla wszystkich łączy.
+   * Operacja ta wykonywana jest po wywołaniu polecenia.
    * \link LaczeDoGNUPlota::Rysuj Rysuj\endlink.
    */
-  static std::list<InfoPlikuDoRysowania>  _InfoPlikow_Glb;
-  /*!
-   * \brief Lista nazw plików z danymi dla \e gnuplota.
-   *
-   * Pole jest zarządcą listy nazw plików, z których są wczytywane
-   * dane dotyczące rysowania obrysu brył przez program \e gnuplot.
-   * Operacja ta wykonywana jest po wywołaniu polecenia. Pole to jest
-   * indywidulane dla danego łącza.
-   * \link LaczeDoGNUPlota::Rysuj Rysuj\endlink.
-   */
-  std::list<InfoPlikuDoRysowania>  _InfoPlikow_Lok;
+  static std::list<InfoPlikuDoRysowania>  _InfoPlikow;
 
    /*!
-    * \brief Deskryptor wejścia standardowego procesu gnuplota
-    *
-    *  Pole przechowuje deskryptor wejścia standardowego związanego
-    *  z procesem uruchomionego programu gnuplot.
+    *  Pole przechowuje deskryptor do wejścia standardowego uruchomionego
+    *  programu gnuplot.
     */
   int           _Wejscie_GNUPlota;
    /*!
-    * \brief Deskryptor wejścia standardowego procesu gnuplota
-    *
-    *  Pole przechowuje deskryptor do wyjścia standardowego związanego
-    *  z procesem uruchomionego programu gnuplot.
+    *  Pole przechowuje deskryptor do weyjścia standardowego uruchomionego
+    *  programu gnuplot.
     */
   int           _Wyjscie_GNUPlota;
    /*!
-    *  \brief Decyduje czy mają być wyświetlane komunikaty o błędach
+    *  \brief Decyduje czy mają być wyświetlane komunikaty o błędach,
+    *         czy też nie.
     *
     *  Wartość tego pola decyduje o tym czy komunikaty o błędach będą 
     *  wyświetlane na wyjście standardowe błędów (\b cerr), czy też nie.
@@ -369,7 +165,7 @@ class LaczeDoGNUPlota {
    * poprzez wywołanie polecenia 
    * \link LaczeDoGNUPlota::Rysuj Rysuj()\endlink
    */
-  TypTrybuRysowania  _TrybRys;
+  TrybRysowania  _TrybRys;
    /*!
     *  \brief Dolny zakres wyświetlanej skali skali dla osi \e OX.
     *
@@ -407,29 +203,21 @@ class LaczeDoGNUPlota {
     */
   float  _Zmax;
    /*!
-    * \brief Skala rysunku wzdłuż osi \e OX
-    *
     *  Wartość tego pola definiuje skalowanie rysunku wzdłuż osi 
     *  \e OX (oś horyzontalna ekranu).
     */
   float  _Xskala;
    /*!
-    * \brief Skala rysunku wzdłuż osi \e OZ
-    *
     *  Wartość tego pola definiuje skalowanie rysunku wzdłuż osi 
     *  \e OZ (oś wertykalna ekranu).
     */
   float  _Zskala;
    /*!
-    * \brief Rotacja rysunku względem osi \e OX
-    *
     *  Wartość tego pola definiuje rotację rysunku (zmiane punktu patrzenia)
     *  względem osi \e OX.
     */
   float  _Xrotacja;
    /*!
-    * \brief Rotacja rysunku względem osi \e OZ
-    *
     *  Wartość tego pola definiuje rotację rysunku (zmiane punktu patrzenia)
     *  względem osi \e OZ.
     */
@@ -451,6 +239,15 @@ class LaczeDoGNUPlota {
    */
   bool _PokazOs_OY;
 
+  /*!
+   * \brief Czy oś OZ ma być widoczna
+   *
+   * Przechowuje informację decydującą o tym czy oś OZ będzie
+   * widoczna na rysunku (\p true), czy też nie (\p false).
+   */
+  bool _PokazOs_OZ;
+
+
 
 
   /*!
@@ -467,9 +264,7 @@ class LaczeDoGNUPlota {
    *              są generowane jako pierwsze, to zmienna ta musi 
    *              być wskaźnikiem do wskaźnika na łańcuch: " ".
    */
-  virtual bool DopiszPlikiDoPoleceniaRysowania( std::string   &Polecenie, 
-                                                char const   **Sep 
-                                              );
+  virtual bool DopiszPlikiDoPoleceniaRysowania( std::string &Polecenie, char const **Sep );
 
   /*!
    *  \brief Tworzy polecenie ustawiające zakres dla danej współrzędnej.
@@ -491,8 +286,6 @@ class LaczeDoGNUPlota {
    */
   std::string ZapiszUstawienieRotacjiISkali() const;
    /*!
-    * \brief Przesyła polecenie do gnuplota
-    *
     * Przesyła na wejście programu \e gnuplot zadany ciąg znaków.
     *  \param Polecenie - komunikat przeznaczony do przeslania.
     *
@@ -515,15 +308,9 @@ class LaczeDoGNUPlota {
   bool CzyWyswietlacKomunikaty() const { return _WyswietlajKomunikatyOBledach;}
   /*!
    * \brief Uruchamia program \e gnuplot jako proces potomny.
-   *
-   * Uruchamia program \e gnuplot jako proces potomny.
-   * \retval true - jeśli operacja powiodła się.
-   * \retval false - w przypadku przeciwnym.
    */
   bool UtworzProcesPotomny();
   /*!
-   * \brief Wyświetla komunika błędu
-   *
    * Wyświetla na wyjście "standard error" komunikat (przekazany jako
    * parametr), o ile pole 
    *   \link LaczeDoGNUPlota::_WyswietlajKomunikatyOBledach
@@ -604,38 +391,46 @@ class LaczeDoGNUPlota {
 
 
   /*!
-   * \brief Dolna wartość zakresu dla osi \e OX
+   * \brief Umożliwia lub zabrania rysowania osi OZ
    *
+   * Umożliwia lub zabrania rysowania osi \e OZ na rysunku wykresu.
+   * \param Pokaz - decyduje o tym czy oś \e OZ będzie rysowana (\p true),
+   *                czy też nie (\p false).
+   */
+  void PokazOs_OZ(bool Pokaz) { _PokazOs_OZ = Pokaz; }
+
+  /*!
+   * \brief Czy oś OZ ma być rysowana
+   *
+   * Udostępnia informację czy oś \e OZ ma być rysowana,
+   * czy też nie.
+   * \retval true - gdy oś \e OZ ma być rysowana,
+   * \retval false - w przypadku przeciwnym.
+   */
+  bool PokazOs_OZ() const { return _PokazOs_OZ; }
+
+
+  /*!
    *  Udostępnia dolną wartość zakresu skali wzdłuż osi \e OX.
    */
   float Xmin() const { return _Xmin; }
   /*!
-   * \brief Górną wartość zakresu dla osi \e OX
-   *
    *  Udostępnia górną wartość zakresu skali wzdłuż osi \e OX.
    */
   float Xmax() const { return _Xmax; }
   /*!
-   * \brief Dolną wartość zakresu dla osi \e OY
-   *
    *  Udostępnia dolną wartość zakresu skali wzdłuż osi \e OY.
    */
   float Ymin() const { return _Ymin; }
   /*!
-   * \brief Górną wartość zakresu dla osi \e OY
-   *
    *  Udostępnia górną wartość zakresu skali wzdłuż osi \e OY.
    */
   float Ymax() const { return _Ymax; }
   /*!
-   * \brief Dolną wartość zakresu dla osi \e OZ
-   *
    *  Udostępnia dolną wartość zakresu skali wzdłuż osi \e OZ.
    */
   float Zmin() const { return _Zmin; }
   /*!
-   * \brief Górną wartość zakresu dla osi \e OZ
-   *
    *  Udostępnia górną wartość zakresu skali wzdłuż osi \e OZ.
    */
   float Zmax() const { return _Zmax; }
@@ -647,14 +442,14 @@ class LaczeDoGNUPlota {
    * \p gnuplot.
    * \param Tryb - wartość parametru określa nowy tryb rysowania.
    */
-  void ZmienTrybRys(TypTrybuRysowania  Tryb) { _TrybRys = Tryb; }
+  void ZmienTrybRys(TrybRysowania  Tryb) { _TrybRys = Tryb; }
 
   /*!
    * \brief Udostępnia aktualny tryb rysowania
    *
    * Udostępnia informację o aktualnym trybie rysowania.
    */
-  TypTrybuRysowania WezTrybRys() const { return _TrybRys; }
+  TrybRysowania WezTrybRys() const { return _TrybRys; }
 
   /*!
    *  \brief Ustawia zakres osi \e OX
@@ -722,15 +517,11 @@ class LaczeDoGNUPlota {
           { UstawSkaleX(skala_x);  UstawSkaleZ(skala_z); }
 
   /*!
-   * \brief Wartość kąta rotacji względem osi \e OX
-   *
    *  Udostępnia wartość kąta rotacji renderowanego rysunku wokół
    *  osi \e OX. Zwracana wartość wyrażona jest w stopiniach.
    */
   float RotacjaX() const { return _Xrotacja; }
   /*!
-   * \brief Wartość kąta rotacji względem osi \e OZ
-   *
    *  Udostępnia wartość kąta rotacji renderowanego rysunku wokół
    *  osi \e OZ. Zwracana wartość wyrażona jest w stopiniach.
    */
@@ -780,157 +571,56 @@ class LaczeDoGNUPlota {
    *  komunikatów.
    */
   void WyswietlajKomunikatyBledow( bool Tryb = true );
-
    /*!
     * \brief  Dodaje nazwę pliku.
     *
     * Powoduje dodanie do listy plików zawierajacych dane dla \e gnuplota,
     * nowej nazwy pliku.
     *
-    * \param  NazwaPliku  - nazwa pliku z danymi dla gnuplota.
-    * \param  SprawdzIstnienie - decyduje o tym czy będzie sprawdzane
-    *                istnienie danego pliku w momencie wywołania
-    *                niniejszej metody.
-    * \param  Dostep - decyduje o tym, czy dany plik będzie \e widziany
-    *                przez wszystkie łącza, czy też przez tylko jedno.
-    *                Parametr ten ma znaczenie tylko wtedy, gdy programista
-    *                chce aby ukazało się więcej niż jedno okienko programu
-    *                \e gnuplot. Oznacza to uruchmienie tylu procesów programu
-    *                \e gnuplot ile jest okienek. Parametr \e Dostep decyduje
-    *                wówczas, czy dane zawarte w pliku będą wyświetlane w jednym
-    *                okienku, czy też we wszystkich.
+    * \param[in]  NazwaPliku  - nazwa pliku z danymi dla gnuplota.
+    * \param[in]  RodzRys - tryb rysowania danego zbioru punktow.
+    *                      Może być ciągły lub jako zbiór osobnych punktów.
+    * \param[in]  Szerokosc - szerokość rysowanego obiektu. W przypadku
+    *                     punktów parametr ten jest połową szerokości
+    *                     kwadratu reprezentującego dany punkt.
     *
-    * \return Zwraca referencję do obiektu zawierającego atrybuty 
-    *         rysowania danych w podanym pliku.
+    * \retval true - jeżeli istnieje plik o nazwie udostępnionej poprzez
+    *            parametr
+    *            \e NazwaPliku oraz jest zezwolenie na jego czytanie.
+    *            Nazwa pliku zostaje dodana do listy plików z danymi 
+    *            dla \e gnuplota.
+    * \retval false - Jeżeli nie istnieje plik o nazwie przekazanej poprzez
+    *            parametr \e NazwaPliku. 
+    *            Nazwa pliku zostaje dodana do listy plików z danymi 
+    *            dla \e gnuplota.
     */
-    InfoPlikuDoRysowania& DodajNazwePliku(
-                                 const char         *NazwaPliku,
-                                 bool                SprawdzIstnienie = false,
-                                 TypDostepuDoZasobu   Dostep = DZ_Lokalny
-                               );
+   bool DodajNazwePliku( const char       * NazwaPliku, 
+                         RodzajRysowania    RodzRys = RR_Ciagly, 
+                         int                Szerokosc = 1
+                       );
+
+    /*!
+     * \brief Tworzy listę parametrów umożliwiających rysowanie brył z plików.
+     */
+    bool DopiszRysowanieZPlikow( std::string &Polecenie, char const **Sep );
 
    /*!
-    * \brief  Dodaje nazwę pliku.
+    * \brief Informuje, czy połączenie z \e gnuplot'em jest zainicjalizowane.
     *
-    * Powoduje dodanie do listy plików zawierajacych dane dla \e gnuplota,
-    * nowej nazwy pliku. Domyślnie dane z tego pliku będą rysowane 
-    * jako łamana łącząca punkty o podanych współrzędnych.
-    *
-    * \param  NazwaPliku  - nazwa pliku z danymi dla gnuplota.
-    * \param  SprawdzIstnienie - decyduje o tym czy będzie sprawdzane
-    *                istnienie danego pliku w momencie wywołania
-    *                niniejszej metody.
-    * \param  Dostep - decyduje o tym, czy dany plik będzie \e widziany
-    *                przez wszystkie łącza, czy też przez tylko jedno.
-    *                Parametr ten ma znaczenie tylko wtedy, gdy programista
-    *                chce aby ukazało się więcej niż jedno okienko programu
-    *                \e gnuplot. Oznacza to uruchmienie tylu procesów programu
-    *                \e gnuplot ile jest okienek. Parametr \e Dostep decyduje
-    *                wówczas, czy dane zawarte w pliku będą wyświetlane w jednym
-    *                okienku, czy też we wszystkich.
-    *
-    * \return Zwraca referencję do obiektu zawierającego atrybuty 
-    *         rysowania danych w podanym pliku.
-    */
-   InfoPlikuDoRysowania& DodajNazwePliku_Lamana( 
-                            const char         *NazwaPliku,
-                            bool                SprawdzIstnienie = false,
-                            TypDostepuDoZasobu   Dostep = DZ_Lokalny
-                          );
-
-   /*!
-    * \brief  Dodaje nazwę pliku.
-    *
-    * Powoduje dodanie do listy plików zawierajacych dane dla \e gnuplota,
-    * nowej nazwy pliku. Domyślnie dane z tego pliku będą rysowane 
-    * jako zbiór jednakowych punktów o podanych współrzędnych.
-    *
-    * \param  NazwaPliku  - nazwa pliku z danymi dla gnuplota.
-    * \param  SprawdzIstnienie - decyduje o tym czy będzie sprawdzane
-    *                istnienie danego pliku w momencie wywołania
-    *                niniejszej metody.
-    * \param  Dostep - decyduje o tym, czy dany plik będzie \e widziany
-    *                przez wszystkie łącza, czy też przez tylko jedno.
-    *                Parametr ten ma znaczenie tylko wtedy, gdy programista
-    *                chce aby ukazało się więcej niż jedno okienko programu
-    *                \e gnuplot. Oznacza to uruchmienie tylu procesów programu
-    *                \e gnuplot ile jest okienek. Parametr \e Dostep decyduje
-    *                wówczas, czy dane zawarte w pliku będą wyświetlane w jednym
-    *                okienku, czy też we wszystkich.
-    *
-    * \return Zwraca referencję do obiektu zawierającego atrybuty 
-    *         rysowania danych w podanym pliku.
-    */
-   InfoPlikuDoRysowania& DodajNazwePliku_JednakowePunkty( 
-                               const char         *NazwaPliku,
-                               bool                SprawdzIstnienie = false,
-                               TypDostepuDoZasobu   Dostep = DZ_Lokalny
-                            );
-
-
-   /*!
-    * \brief  Dodaje nazwę pliku.
-    *
-    * Powoduje dodanie do listy plików zawierajacych dane dla \e gnuplota,
-    * nowej nazwy pliku.
-    *
-    * \param  NazwaPliku  - nazwa pliku z danymi dla gnuplota.
-    * \param  SprawdzIstnienie - decyduje o tym czy będzie sprawdzane
-    *                istnienie danego pliku w momencie wywołania
-    *                niniejszej metody.
-    * \param  Dostep - decyduje o tym, czy dany plik będzie \e widziany
-    *                przez wszystkie łącza, czy też przez tylko jedno.
-    *                Parametr ten ma znaczenie tylko wtedy, gdy programista
-    *                chce aby ukazało się więcej niż jedno okienko programu
-    *                \e gnuplot. Oznacza to uruchmienie tylu procesów programu
-    *                \e gnuplot ile jest okienek. Parametr \e Dostep decyduje
-    *                wówczas, czy dane zawarte w pliku będą wyświetlane w jednym
-    *                okienku, czy też we wszystkich.
-    *
-    * \return Zwraca referencję do obiektu zawierającego atrybuty 
-    *         rysowania danych w podanym pliku.
-    */
-   InfoPlikuDoRysowania& DodajNazwePliku_PunktyRoznejWielkosci( 
-                                  const char         *NazwaPliku,
-                                  bool                SprawdzIstnienie = false,
-                                  TypDostepuDoZasobu   Dostep = DZ_Lokalny
-                                );
-
-
+    * Informuje, czy połączenie z programem \e gnuplot jest zainicjowane.
+    * \retval true - jeśli tak,
+    * \retval false - w przypadku przeciwnym.
+    */ 
+    bool CzyPolaczenieJestZainicjowane() const;
 
   /*!
-   * \brief Tworzy listę parametrów umożliwiających rysowanie brył z plików.
-   */
-  bool DopiszRysowanieZPlikow( std::string &Polecenie, char const **Sep );
-
-  /*!
-   * \brief Tworzy listę parametrów umożliwiających rysowanie brył z plików.
-   */
-  bool DopiszRysowanieZRoznychPunktow( std::string   &Polecenie, 
-                                       char const    *Sep 
-                                     );
-
-
-  /*!
-   * \brief Informuje, czy połączenie z \e gnuplot'em jest zainicjalizowane.
-   *
-   * Informuje, czy połączenie z programem \e gnuplot jest zainicjowane.
-   * \retval true - jeśli tak,
-   * \retval false - w przypadku przeciwnym.
-   */ 
-  bool CzyPolaczenieJestZainicjowane() const;
-
-  /*!
-   * \brief Generuje polecenie rysowania i przesyła je do gnuplota
-   *
    *  Jeżeli lista plików nie jest pusta, to generuje sekwencje poleceń
    *  dla programu \e gnuplot mająca na celu narysowanie płaszczyzn na
    *  na podstawie danych zawartych w plikach z listy. 
    *
    *  \pre  Lista plików nie powinna być pusta. Nazwy plików na niej
    *        można umieścić za pomoca metody 
-   *        \link LaczeDoGNUPlota::DodajNazwePliku DodajNazwePliku\endlink
-   *        jak też innych tego typu metod.
+   *        \link LaczeDoGNUPlota::DodajNazwe DodajNazwe\endlink.
    *        Metoda nie wymaga wcześniejszego zainicjowania połączenia
    *        z \e gnuplotem.
    *  \retval true   - gdy zostają poprawnie wysłane polecenia dla gnuplota.
@@ -941,8 +631,6 @@ class LaczeDoGNUPlota {
    */
   bool Rysuj();
   /*!
-   * \brief Generuje polecenie rysowania do pliku i przesyła je do gnuplota
-   *
    *  Działa analogicznie jak metoda 
    *  \link LaczeDoGNUPlota::Rysuj Rysuj\endlink, z tą różnicą, że 
    *  rysunek robota
@@ -984,20 +672,9 @@ class LaczeDoGNUPlota {
   /*!
    *  \brief Usuwa ostatnią nazwę pliku.
    * 
-   *  Usuwa ostatnią nazwę z lokalnej listy nazw plików, tzn.
-   *  listy, która jest widoczna tylko w danym łączu z programem
-   *  \e gnuplot.
+   *  Usuwa ostatnią nazwę z listy nazw plików.
    */
-  void UsunOstatniaNazwe_ListaLokalna();
-  /*!
-   *  \brief Usuwa ostatnią nazwę pliku.
-   * 
-   *  Usuwa ostatnią nazwę z globalnej listy nazw plików, tzn.
-   *  listy, która jest widoczna we wszystkich łączach z programem
-   *  \e gnuplot.
-   */
-  void UsunOstatniaNazwe_ListaGlobalna();
-
+  void UsunOstatniaNazwe();
   /*!
    *  \brief Kasuje zawartość listy nazw plików.
    * 
@@ -1013,7 +690,7 @@ class LaczeDoGNUPlota {
   bool LaczeDoGNUPlota::DopiszPlikiDoPoleceniaRysowania( std::string &,
                                                          char const  **
                                                        )
-  { return false; }
+  { return true; }
 
 
 

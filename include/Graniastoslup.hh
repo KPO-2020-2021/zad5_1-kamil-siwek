@@ -2,8 +2,7 @@
 #define GRANIASTOSLUP_HH
 
 #include <iostream>
-#include "Wektor3D.hh"
-#include "Bryla.hh"
+#include "Bryla.h"
 using namespace std;
 
 
@@ -18,28 +17,35 @@ zawiera funkcje typu:
 -przeciazenie opratora [] oraz ()
 */
 
-class Graniastoslup: public Bryla
+class Graniastoslup : public Bryla
 {
 
   public:
+  Graniastoslup(std::string nazwa){ this->nazwa=nazwa;}
+bool StworzGraniastoslup6(double       Kat_st,double       x_trans,double       y_trans,double       z_trans)
+{
 
-void StworzGraniastoslup6( double Kat_st,double x_trans,double y_trans,double z_trans);
-void obrot( double Kat_st,double x_trans,double y_trans,double z_trans,double Z);
-Graniastoslup(){}
+  double  KatSkoku_st = 2*M_PI/ILOSC_WIERZCHOLKOW_GRANIATOSLUPA;
+  double  x_wierz, y_wierz;
+ Wierz.clear();
+  for (unsigned int Idx = 0; Idx <= ILOSC_WIERZCHOLKOW_GRANIATOSLUPA; ++Idx)
+  {
+    x_wierz = PROMIEN_PODSTAWY*cos(Kat_st);
+    y_wierz = PROMIEN_PODSTAWY*sin(Kat_st);
+    Kat_st += KatSkoku_st;
+    ZapiszCzteryWierzcholki(-x_wierz,y_wierz,GRUPOSC_ROTORA/2,x_trans,y_trans,PROSTOKAT_Z+GRUPOSC_ROTORA/2+z_trans);
+  }
+return true;
+}
+
 
 };
 
 
 
 
-/*
- * To przeciazenie trzeba opisac. Co ono robi. Jaki format
- * danych akceptuje. Jakie jest znaczenie parametrow itd.
- * Szczegoly dotyczace zalecen realizacji opisow mozna
- * znalezc w pliku:
- *    ~bk/edu/kpo/zalecenia.txt
- */
-std::ostream& operator << ( std::ostream &Strm,const Graniastoslup    &Pr);
+
+std::ostream& operator << ( std::ostream &Strm,const Graniastoslup &Pr);
 
 
 #endif

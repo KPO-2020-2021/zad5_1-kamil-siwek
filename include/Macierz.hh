@@ -1,5 +1,5 @@
-#ifndef MACIERZ_HH
-#define MACIERZ_HH
+#ifndef Macierz_HH
+#define Macierz_HH
 
 
 #include <iostream>
@@ -27,89 +27,74 @@ zawiera funkcje typu:
 -zeruj
 -wypisz
 -ustaw kat
--przeciazenie opratora macierz*macierz
--przeciazenie opratora macierz*wektor
--przeciazenie opratora macierz+macierz
+-przeciazenie opratora Macierz*Macierz
+-przeciazenie opratora Macierz*wektor
+-przeciazenie opratora Macierz+Macierz
 -przeciazenie opratora [] oraz ()
 */
 template <int Wymiar>
-class Macierz{
-
-  Wektor<Wymiar> Mac[Wymiar];
-  double kat;
-Wektor<Wymiar> srodek_obrotu;
-  public:
-
-
-void srodek(Wektor<Wymiar> srodek_obrotu)
+class Macierz
 {
-  this->srodek_obrotu=srodek_obrotu;
-}
 
-Macierz()
-{
-        for(int i=0; i<Wymiar; i++)
-      {
-      for(int j=0; j<Wymiar; j++)
-                Mac[i][j]=0;
-      }
-}
-void zeruj()
-{
-        for(int i=0; i<Wymiar; i++)
-      {
-      for(int j=0; j<Wymiar; j++)
-                Mac[i][j]=0;
-      }
-}
-  double get_kat(){return kat;};
-  void set_kat( double kat){this->kat=kat*M_PI/180;};
-Wektor<Wymiar> operator *(Wektor<Wymiar> W)
-  {
-      Wektor<Wymiar> Wynik;
-        for(int i=0; i<Wymiar; i++)
-        Wynik[i]=0;
-    //    cout<<"srodek w funkcji"<<srodek_obrotu<<endl;
-      for(int i=0; i<Wymiar; i++)
-      {
-      for(int j=0; j<Wymiar; j++)
-      {
-      Wynik[i]+=Mac[i][j]*(W[j]-srodek_obrotu[j]);
-      }
-      Wynik[i]+=srodek_obrotu[i];
-      }
-        return Wynik;
-  }
+    Wektor<Wymiar> M[Wymiar];
+    double kat;
+    Wektor<Wymiar> srodek_obrotu;
+public:
 
 
-  Macierz<Wymiar> operator *(Macierz<Wymiar> W)
-  {
-      Macierz<Wymiar> Wynik;
-      double s=0;
-  for(int i = 0; i < Wymiar; i++)
-    for(int j = 0; j < Wymiar; j++)
+    void srodek(Wektor<Wymiar> srodek_obrotu)
     {
-      s = 0;
-      for(int k = 0; k < Wymiar; k++) s += W(i,j) * Mac[k][j];
-      Wynik(i,j) = s;
+        this->srodek_obrotu=srodek_obrotu;
     }
+
+    Macierz()
+    {
+        for(int i=0; i<Wymiar; i++)
+        {
+            for(int j=0; j<Wymiar; j++)
+                M[i][j]=0;
+        }
+    }
+
+
+    double get_kat()
+    {
+        return kat;
+    };
+
+    void set_kat( double kat)
+    {
+        this->kat=kat*M_PI/180;
+    };
+
+    Wektor<Wymiar> operator *(Wektor<Wymiar> W)
+    {
+        Wektor<Wymiar> Wynik;
+        for(int i=0; i<Wymiar; i++)
+        {
+            for(int j=0; j<Wymiar; j++)
+            {
+                Wynik[i]+=M[i][j]*(W[j]-srodek_obrotu[j]);
+            }
+            Wynik[i]+=srodek_obrotu[i];
+        }
         return Wynik;
-  }
+    }
 
-  Macierz<Wymiar> operator +(Macierz<Wymiar>M)
-  {
-      Macierz<Wymiar> Wynik;
 
-      for(int i=0; i<Wymiar; i++)
-      for(int j=0; j<Wymiar; j++)
-      Wynik(i,j)=Mac[i][j]+M(i,j);
 
-        return Wynik;
-  }
-
- Wektor<Wymiar>  &operator[](int i){return Mac[i];}
-double &operator()(int i, int j){return Mac[i][j];}
-double operator()(int i, int j)const{return Mac[i][j];}
+    Wektor<Wymiar>  &operator[](int i)
+    {
+        return M[i];
+    }
+    double &operator()(int i, int j)
+    {
+        return M[i][j];
+    }
+    double operator()(int i, int j)const
+    {
+        return M[i][j];
+    }
 
 };
 
@@ -130,14 +115,14 @@ inline
 std::ostream& operator << (std::ostream &Strm, const Macierz<Wymiar> &Wek)
 {
 
-      for(int i=0; i<Wymiar; i++)
-      {
-      for(int j=0; j<Wymiar; j++)
-      cout<<Wek(i,j)<<" ";
+    for(int i=0; i<Wymiar; i++)
+    {
+        for(int j=0; j<Wymiar; j++)
+            cout<<Wek(i,j)<<" ";
 
-      cout<<endl;
-      }
-  return Strm;
+        cout<<endl;
+    }
+    return Strm;
 }
 
 

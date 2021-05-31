@@ -2,11 +2,8 @@
 #define PROSTOKAT_HH
 
 #include <iostream>
-#include "Wektor3D.hh"
-#include "Bryla.hh"
-#include "Macierz3x3.hh"
+#include "Bryla.h"
 using namespace std;
-
 
 
 /*
@@ -20,28 +17,22 @@ zawiera funkcje typu:
 -przeciazenie opratora [] oraz ()
 */
 
-class Prostopadloscian: public Bryla
+class Prostopadloscian : public Bryla
 {
 
   public:
-
-void StworzProstopadloscian(double x_trans,double y_trans,double z_trans);
-Prostopadloscian(){}
-Prostopadloscian(int roz)
+  Prostopadloscian(std::string nazwa){ this->nazwa=nazwa;}
+bool StworzProstopadloscian( double x_trans = 0, double y_trans = 0 ,double z_trans = 0 )
 {
-wierz.resize(roz);
+ Wierz.clear();
+  ZapiszCzteryWierzcholki(-PROSTOKAT_X,PROSTOKAT_Y,PROSTOKAT_Z,x_trans,y_trans,z_trans);
+  ZapiszCzteryWierzcholki(PROSTOKAT_X,PROSTOKAT_Y,PROSTOKAT_Z,x_trans,y_trans,z_trans);
+  ZapiszCzteryWierzcholki(PROSTOKAT_X,-PROSTOKAT_Y,PROSTOKAT_Z,x_trans,y_trans,z_trans);
+  ZapiszCzteryWierzcholki(-PROSTOKAT_X,-PROSTOKAT_Y,PROSTOKAT_Z,x_trans,y_trans,z_trans);
+  ZapiszCzteryWierzcholki(-PROSTOKAT_X,PROSTOKAT_Y,PROSTOKAT_Z,x_trans,y_trans,z_trans);
+ return true;
 }
 
-double get_Z(){return  wierz[0][2];}
-Prostopadloscian operator *(Macierz3x3 M)
-{
-Prostopadloscian pr((int)wierz.size());
-   for(int i=0; i<(int)wierz.size(); i++)
-   {
-   pr[i]    =M*wierz[i];
-   }
- return pr;
-}
 };
 
 
@@ -54,7 +45,9 @@ Prostopadloscian pr((int)wierz.size());
  * znalezc w pliku:
  *    ~bk/edu/kpo/zalecenia.txt
  */
-std::ostream& operator << ( std::ostream &Strm,const Prostopadloscian    &Pr);
+std::ostream& operator << ( std::ostream       &Strm,
+                            const Prostopadloscian    &Pr
+                          );
 
 
 #endif

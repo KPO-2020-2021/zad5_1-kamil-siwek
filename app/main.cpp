@@ -1,3 +1,16 @@
+/*
+ * Przykład ten ma tylko i wyłącznie za zadanie pokazanie efektów animacji lotu
+ * drona. Kod w nim zawarty nie jest pisany w sposób obiektowo zorientowany.
+ * Dlatego też nie należy wzorować się na nim.
+ */
+
+
+
+
+
+
+
+
 // Executables must have the following defined if the library contains
 // doctest definitions. For builds with this disabled, e.g. code shipped to
 // users, this can be left out.
@@ -11,6 +24,7 @@
 #include "Dron.hh"
 #include "exampleConfig.h"
 #include "example.h"
+using namespace std;
 
 /*
  * Simple main program that demontrates how access
@@ -28,9 +42,12 @@ int main() {
             << std::endl;
   std::system("cat ../LICENSE");
 
- Dron D;
-while(1){};
+dron D[2];
+while(D[0].obsluga_drona()){};
+
 
   Dummy d = Dummy();
   return d.doSomething() ? 0 : -1;
 }
+
+

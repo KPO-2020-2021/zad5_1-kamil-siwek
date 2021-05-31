@@ -1,4 +1,6 @@
-#include "Bryla.hh"
+#include "Bryla.h"
+
+
 
 
   void Bryla::zamien_srodek(Wektor3D srodek)
@@ -11,20 +13,23 @@
    return srodek;
   }
 
-  void Bryla::ZapiszCzteryWierzcholki(double x_wierz,double y_wierz,double z_wierz,double x_trans,double y_trans,double z_trans)
+   Wektor3D &Bryla::operator [](int i)
+  {
+      return  Wierz[i];
+  }
+
+  Wektor3D Bryla::operator [](int i) const
+  {
+      return  Wierz[i];
+ }
+
+
+Bryla::Bryla()
 {
-ZapiszTrzyWartosci( x_trans, y_trans, z_wierz+z_trans );
-  ZapiszTrzyWartosci( x_wierz+x_trans, y_wierz+y_trans, z_wierz+z_trans );
-  ZapiszTrzyWartosci(  x_wierz+x_trans, y_wierz+y_trans, -z_wierz+z_trans );
-  ZapiszTrzyWartosci(x_trans, y_trans, -z_wierz+z_trans );
+    //ctor
 }
 
-
-  void Bryla::ZapiszCzteryWierzcholki_prze(double x_trans,double y_trans,double z_trans)
+Bryla::~Bryla()
 {
-przsun( x_trans, y_trans, z_trans );
-  przsun( x_trans, y_trans, z_trans );
-  przsun(  x_trans, y_trans, z_trans );
-  przsun(x_trans, y_trans, z_trans );
-
+    //dtor
 }

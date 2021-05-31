@@ -1,40 +1,220 @@
 #include "Dron.hh"
-Dron::Dron()
+int dron::id=0;
+dron::dron()
 {
-  Lacze.DodajNazwePliku(NAZWA_PLIKU__PROSTOPADLOSCIAN);
+id++;
 
-  Lacze.ZmienTrybRys(PzG::TR_3D);
-  Lacze.Inicjalizuj();  // Tutaj startuje gnuplot.
+Pr=new Prostopadloscian("../datasets/prostopadloscian"+to_string(id)+".dat");
 
-  Lacze.UstawZakresX(-90, 90);
-  Lacze.UstawZakresY(-60, 150);
-  Lacze.UstawZakresZ(-20, 90);
+for(int i=0; i<4; i++)
+{
+    Sm[i]= new Graniastoslup("../datasets/graniastoslup"+to_string(id)+to_string(i)+".dat");
+}
+ 
+    Lacze.DodajNazwePliku(Pr->get_nazwa().c_str());
+    for(int i=0; i<4; i++)
+    Lacze.DodajNazwePliku(Sm[i]->get_nazwa().c_str());
 
 
-  Lacze.UstawRotacjeXZ(64,65); // Tutaj ustawiany jest widok
+    Lacze.ZmienTrybRys(PzG::TR_3D);
+    Lacze.Inicjalizuj();  // Tutaj startuje gnuplot.
 
-  ZapiszDrona(0,0,0,0);
+    Lacze.UstawZakresX(-150, 150);
+    Lacze.UstawZakresY(-150, 150);
+    Lacze.UstawZakresZ(-150, 150);
+
+
+    Lacze.UstawRotacjeXZ(64,65); // Tutaj ustawiany jest widok
+
+    ZapiszDrona(1*rand()%360,rand()%240-120,rand()%240-120,0);
 
 
 }
 
-
-
-void Dron::zapisz()
+bool  dron::obsluga_drona()
 {
-ofstream korpus(NAZWA_PLIKU__PROSTOPADLOSCIAN);
-korpus<<Pr;
+    double kat,suma_katow=0;
+    Macierz3x3 M,M_drogi,M_Wir;
+    Wektor3D Wek;
+    double droga,szyb_dr, szyb_wir;
+    char znak;
+    Lacze.Rysuj();
+    for(int i=0; i<4; i++)
+    {
+        Wek=(*Sm[i])[0];
+        Wek[2]-=2.5;
+        Sm[i]->zamien_srodek (Wek);
+    }
+
+    while(1)
+    {
+
+
+        cin >> znak;
+        switch(znak)
+        {
+
+        case 'o':
+        {
+            cout<<"podaj kat ";
+            cin >> kat;
+            suma_katow+=kat;
+
+            for(int i=0; i<kat; i++)
+            {
+
+                M.set_kat(1);
+                M.srodek(Pr->zwroc_srodek());
+                M = obrot_z(M);
+                for(int i=0; i<Pr->get_wymiar(); i++)
+                {
+                    (*Pr)[i]=M*(*Pr)[i];
+                }
+                for(int i=0; i<4; i++)
+                {
+                    for(int j=0; j<Sm[i]->get_wymiar(); j++)
+                    {
+                        (*Sm[i])[j]=M*(*Sm[i])[j];
+                    }
+                }
+
+                zapis_do_plikow();
+                usleep(50000);
+
+                Lacze.Rysuj();
+            }
+            for(int i=0; i<4; i++)
+            {
+                Wek=(*Sm[i])[0];
+                Wek[2]-=2.5;
+                Sm[i]->zamien_srodek (Wek);
+            }
+        }
+        break;
+        case 'p':
+        {
+            cout<<"podaj kat wznoszenia"<<endl;
+            cin>>kat;
+            cout<<"podaj dorge"<<endl;
+            cin>>droga;
+            cout<<"podaj  szybkosc drogi "<<endl;
+            cin>>szyb_dr;
+            cout<<"podaj szybkosc winikow"<<endl;
+            cin>>szyb_wir;
+            Wek[0]=szyb_dr*cos(kat*M_PI/180);
+            Wek[1]=0;
+            Wek[2]=szyb_dr*sin(kat*M_PI/180);
+            M_drogi.set_kat(suma_katow);
+            M_drogi = obrot_z(M_drogi);
+
+            Wek=M_drogi*Wek;
+            for(int i=0; i<droga/szyb_dr; i++)
+            {
+
+                Pr->zamien_srodek ( Pr->zwroc_srodek()+Wek);
+                for(int i=0; i<Pr->get_wymiar(); i++)
+                    (*Pr)[i]=(*Pr)[i]+Wek;
+                for(int i=0; i<4; i++)
+                    for(int j=0; j<Sm[i]->get_wymiar(); j++)
+                        (*Sm[i])[j]=(*Sm[i])[j]+Wek;
+                for(int k=0; k<4; k++)
+                {
+                    M.set_kat(szyb_wir);
+                    M.srodek(Sm[k]->zwroc_srodek());
+                    M = obrot_z(M);
+                    Sm[k]->zamien_srodek (Sm[k]->zwroc_srodek()+ Wek);
+                    for(int j=0; j<Sm[k]->get_wymiar(); j++)
+                    {
+                        (*Sm)[k][j]=M*(*Sm)[k][j];
+                    }
+                }
+                usleep(50000);
+                zapis_do_plikow();
+                Lacze.Rysuj();
+                for(int j=0; j<4; j++);
+
+            }
+        }
+        break;
+        case 'k':
+        {
+
+
+            return false;
+        }
+        }
+
+    }
+    return true;
 }
 
 
-bool Dron::ZapiszDrona( double       Kat_st = 0,double       x_trans = 0,  double       y_trans = 0,double       z_trans = 0)
+void dron::zapis_do_plikow()
 {
-Pr.czysc_wektor();
+    ofstream korpus(Pr->get_nazwa());
+    korpus<<(*Pr);
+    korpus.close();
+    ofstream sm(Sm[0]->get_nazwa());
+    sm<< *Sm[0];
+    sm.close();
+    ofstream sm1(Sm[1]->get_nazwa());
+    sm1<< *Sm[1];
+    sm1.close();
+    ofstream sm2(Sm[2]->get_nazwa());
+    sm2<< *Sm[2];
+    sm2.close();
+    ofstream sm3(Sm[3]->get_nazwa());
+    sm3<< *Sm[3];
+    sm3.close();
+}
 
-Kat_st=Kat_st;
- Pr.StworzProstopadloscian(x_trans,y_trans,z_trans);
+bool dron::ZapiszDrona(
+    double       Kat_st ,
+    double       x_trans ,
+    double       y_trans ,
+    double       z_trans
+)
+{
 
-zapisz();
- Lacze.Rysuj();
-  return true;
+    if (!Pr->StworzProstopadloscian(x_trans,y_trans,z_trans)) return false;
+    if (!Sm[0]->StworzGraniastoslup6(
+                Kat_st,
+                x_trans+PROSTOKAT_X,
+                y_trans+PROSTOKAT_Y,
+                z_trans
+            )) return false;
+    if (!Sm[1]->StworzGraniastoslup6(
+                -Kat_st,
+                x_trans-PROSTOKAT_X,
+                y_trans+PROSTOKAT_Y,
+                z_trans
+            )) return false;
+    if (!Sm[2]->StworzGraniastoslup6(
+                Kat_st,
+                x_trans-PROSTOKAT_X,
+                y_trans-PROSTOKAT_Y,
+                z_trans
+            )) return false;
+    if (!Sm[3]->StworzGraniastoslup6(
+                -Kat_st,
+                x_trans+PROSTOKAT_X,
+                y_trans-PROSTOKAT_Y,
+                z_trans
+            )) return false;
+    zapis_do_plikow();
+    return true;
+}
+
+
+
+
+bool dron::AnimacjaRuchuDrona(PzG::LaczeDoGNUPlota  & Lacze,unsigned int IloscIteracji,double Kat_Zmiana_st,double x_Zmiana,double y_Zmiana,double z_Zmiana)
+{
+    for (unsigned int Ind = 0;  Ind < IloscIteracji; ++Ind)
+    {
+        if (!ZapiszDrona(Ind*Kat_Zmiana_st,Ind*x_Zmiana,y_Zmiana,Ind*z_Zmiana)) return false;
+        Lacze.Rysuj();
+        usleep(200000);
+    }
+    return true;
 }
