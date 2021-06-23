@@ -31,6 +31,12 @@ class Wektor {
   double wspolrzedne[Wymiar];
   public:
   Wektor();
+ Wektor(double tab[3])
+  {     
+    for(int i=0; i<Wymiar; i++)
+      wspolrzedne[i]=tab[i];
+
+  }
   double &operator [](int i){ return  wspolrzedne[i]; };
   double operator [](int i) const{ return  wspolrzedne[i]; };
   Wektor operator +(Wektor Lz1);   

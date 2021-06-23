@@ -18,10 +18,10 @@ class dron
 
 Prostopadloscian *Pr;
 Graniastoslup *Sm[4];
- PzG::LaczeDoGNUPlota  Lacze;
+ PzG::LaczeDoGNUPlota  &Lacze;
 public:
 static int id;
-    dron();
+    dron(PzG::LaczeDoGNUPlota  &Lacze);
     bool obsluga_drona();
 
 

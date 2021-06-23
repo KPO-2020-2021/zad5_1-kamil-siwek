@@ -1,6 +1,6 @@
 #include "Dron.hh"
 int dron::id=0;
-dron::dron()
+dron::dron(PzG::LaczeDoGNUPlota  &Lacze):Lacze(Lacze)
 {
 id++;
 
@@ -16,15 +16,7 @@ for(int i=0; i<4; i++)
     Lacze.DodajNazwePliku(Sm[i]->get_nazwa().c_str());
 
 
-    Lacze.ZmienTrybRys(PzG::TR_3D);
-    Lacze.Inicjalizuj();  // Tutaj startuje gnuplot.
 
-    Lacze.UstawZakresX(-150, 150);
-    Lacze.UstawZakresY(-150, 150);
-    Lacze.UstawZakresZ(-150, 150);
-
-
-    Lacze.UstawRotacjeXZ(64,65); // Tutaj ustawiany jest widok
 
     ZapiszDrona(1*rand()%360,rand()%240-120,rand()%240-120,0);
 
@@ -93,14 +85,47 @@ bool  dron::obsluga_drona()
         break;
         case 'p':
         {
-            cout<<"podaj kat wznoszenia"<<endl;
-            cin>>kat;
+            kat=90;
             cout<<"podaj dorge"<<endl;
             cin>>droga;
-            cout<<"podaj  szybkosc drogi "<<endl;
-            cin>>szyb_dr;
-            cout<<"podaj szybkosc winikow"<<endl;
-            cin>>szyb_wir;
+            double droga_w=50;
+            szyb_dr=2;
+            szyb_wir=10;
+
+            Wek[0]=szyb_dr*cos(kat*M_PI/180);
+            Wek[1]=0;
+            Wek[2]=szyb_dr*sin(kat*M_PI/180);
+            M_drogi.set_kat(suma_katow);
+            M_drogi = obrot_z(M_drogi);
+
+            Wek=M_drogi*Wek;
+            for(int i=0; i<droga_w/szyb_dr; i++)
+            {
+
+                Pr->zamien_srodek ( Pr->zwroc_srodek()+Wek);
+                for(int i=0; i<Pr->get_wymiar(); i++)
+                    (*Pr)[i]=(*Pr)[i]+Wek;
+                for(int i=0; i<4; i++)
+                    for(int j=0; j<Sm[i]->get_wymiar(); j++)
+                        (*Sm[i])[j]=(*Sm[i])[j]+Wek;
+                for(int k=0; k<4; k++)
+                {
+                    M.set_kat(szyb_wir);
+                    M.srodek(Sm[k]->zwroc_srodek());
+                    M = obrot_z(M);
+                    Sm[k]->zamien_srodek (Sm[k]->zwroc_srodek()+ Wek);
+                    for(int j=0; j<Sm[k]->get_wymiar(); j++)
+                    {
+                        (*Sm[k])[j]=M*(*Sm[k])[j];
+                    }
+                }
+                usleep(50000);
+                zapis_do_plikow();
+                Lacze.Rysuj();
+                for(int j=0; j<4; j++);
+
+            }
+kat=0;
             Wek[0]=szyb_dr*cos(kat*M_PI/180);
             Wek[1]=0;
             Wek[2]=szyb_dr*sin(kat*M_PI/180);
@@ -125,7 +150,41 @@ bool  dron::obsluga_drona()
                     Sm[k]->zamien_srodek (Sm[k]->zwroc_srodek()+ Wek);
                     for(int j=0; j<Sm[k]->get_wymiar(); j++)
                     {
-                        (*Sm)[k][j]=M*(*Sm)[k][j];
+                        (*Sm[k])[j]=M*(*Sm[k])[j];
+                    }
+                }
+                usleep(50000);
+                zapis_do_plikow();
+                Lacze.Rysuj();
+                for(int j=0; j<4; j++);
+
+            }
+            kat=-90;
+            Wek[0]=szyb_dr*cos(kat*M_PI/180);
+            Wek[1]=0;
+            Wek[2]=szyb_dr*sin(kat*M_PI/180);
+            M_drogi.set_kat(suma_katow);
+            M_drogi = obrot_z(M_drogi);
+
+            Wek=M_drogi*Wek;
+            for(int i=0; i<droga_w/szyb_dr; i++)
+            {
+
+                Pr->zamien_srodek ( Pr->zwroc_srodek()+Wek);
+                for(int i=0; i<Pr->get_wymiar(); i++)
+                    (*Pr)[i]=(*Pr)[i]+Wek;
+                for(int i=0; i<4; i++)
+                    for(int j=0; j<Sm[i]->get_wymiar(); j++)
+                        (*Sm[i])[j]=(*Sm[i])[j]+Wek;
+                for(int k=0; k<4; k++)
+                {
+                    M.set_kat(szyb_wir);
+                    M.srodek(Sm[k]->zwroc_srodek());
+                    M = obrot_z(M);
+                    Sm[k]->zamien_srodek (Sm[k]->zwroc_srodek()+ Wek);
+                    for(int j=0; j<Sm[k]->get_wymiar(); j++)
+                    {
+                        (*Sm[k])[j]=M*(*Sm[k])[j];
                     }
                 }
                 usleep(50000);
